@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Face Recognition</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="start-camera">Start Camera</button>
+    <video id="video" autoplay></video>
+    <script defer src="dist/face-api.min.js"></script>
+    <script defer src="script-3.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.1.0/firebase.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('contextmenu', event=> event.preventDefault()); 
+/*document.onkeydown = function(e) { 
+if(event.keyCode == 123) { 
+return false; 
+} 
+if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)){ 
+return false; 
+} 
+if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)){ 
+return false; 
+} 
+if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)){ 
+return false; 
+} 
+}*/ 
+        const firebaseConfig = {
+            apiKey: "AIzaSyBCRQKsZm8Qp22YBg22PQ4t6C91OhsCc7k",
+            authDomain: "projectvue-d5bab.firebaseapp.com",
+            databaseURL: "https://projectvue-d5bab.firebaseio.com",
+            projectId: "projectvue-d5bab",
+            storageBucket: "projectvue-d5bab.appspot.com",
+            messagingSenderId: "471834020906",
+            appId: "1:471834020906:web:9011d11b58406de3654753"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        var storage = firebase.storage();
+        var storageRef = storage.ref();
+        const label_name = []
+
+        var storageRefList = firebase.storage().ref("Absensi");
+
+        console.log(storageRefList)
+
+        // Now we get the references of these images
+        storageRefList.listAll().then(function(result) {
+            console.log('RESULT FIREBASE', result)
+          result.items.forEach(function(imageRef) {
+            // And finally display them
+            label_name.push(imageRef)
+            console.log('IMAGEREF', imageRef);
+          });
+        }).catch(function(error) {
+          // Handle any errors
+        });
+    </script>
+    <!-- <input type="file" id="imageUpload">
+    <canvas id="canvas" width="320" height="240"></canvas>
+    <button id="click-photo">Click Photo</button> -->
+</body>
+
+</html>
