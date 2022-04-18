@@ -6,25 +6,30 @@ let displaySize;
 let width = 1280;
 let height = 720;
 
+// var localstream;
+
 const startSteam = () => {
     console.log("----- START STEAM ------");
     navigator.mediaDevices.getUserMedia({
         video: {width, height},
         audio : false
-    }).then((steam) => {video.srcObject = steam});
+    }).then((steam) => {
+        video.srcObject = steam
+        // localstream = steam
+    });
 }
 
 console.log(faceapi.nets);
 
 console.log("----- START LOAD MODEL ------");
-Promise.all([
+/*Promise.all([
     // faceapi.nets.ageGenderNet.loadFromUri('models'),
     faceapi.nets.ssdMobilenetv1.loadFromUri('models'),
     faceapi.nets.tinyFaceDetector.loadFromUri('models'),
     faceapi.nets.faceLandmark68Net.loadFromUri('models'),
     faceapi.nets.faceRecognitionNet.loadFromUri('models'),
     // faceapi.nets.faceExpressionNet.loadFromUri('models')
-]).then(startSteam);
+]).then(startSteam);*/
 
 
 async function detect() {
@@ -35,9 +40,9 @@ async function detect() {
                                 .withFaceDescriptors()
     //console.log(detections);
 
-    if (!detections.length) {
+    /*if (!detections.length) {
         return
-    }
+    }*/
 
     const labeledFaceDescriptors = await loadLabeledImages()
     console.log('LABELEDFACEDESCRIPTORS', labeledFaceDescriptors)
@@ -45,19 +50,28 @@ async function detect() {
     
     ctx.clearRect(0,0, width, height);
     const resizedDetections = faceapi.resizeResults(detections, displaySize)
+    // console.log('RESIZEDDETECTIONS', resizedDetections)
     faceapi.draw.drawDetections(canvas, resizedDetections);
-    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+    // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
     // faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
 
     // console.log(resizedDetections.map(r => r));
     // const resizedDetections = faceapi.resizeResults(detections, displaySize)
     const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
+    // console.log('RESULTS', results)
     results.forEach((result, i) => {
         // console.log('RESULT FACE', result)
       const box = resizedDetections[i].detection.box
-      console.log('BOXBOXBOXBOXBOXBOXBOXBOX', box)
+      // console.log('BOXBOXBOXBOXBOXBOXBOXBOX', box)
       const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
       drawBox.draw(canvas)
+      console.log("NAME", result.toString())
+      setTimeout(() => {
+          location.reload()
+          /*video.pause();
+          video.src = "";
+          localstream.getTracks()[0].stop();*/
+      }, 100)
     })
     /*results.forEach((result, i) => {
       new faceapi.draw.DrawTextField ([
@@ -98,7 +112,7 @@ function loadLabeledImages() {
         for (const idx in labels) {
             const img = await faceapi.fetchImage(`http://localhost/face-matching/labeled_images/${label}.png`)
             // const img = await faceapi.fetchImage(`https://firebasestorage.googleapis.com/v0/b/projectvue-d5bab.appspot.com/o/Absensi%2F${labels[idx]}?alt=media`)
-            console.log("SDSFSFDFDFLDFLDLFDDFDL", img)
+            // console.log("SDSFSFDFDFLDFLDLFDDFDL", img)
             const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
             descriptions.push(detections.descriptor)
             // if (labels.length) break
@@ -108,4 +122,16 @@ function loadLabeledImages() {
       return new faceapi.LabeledFaceDescriptors(label, descriptions)
     })
   )
+}
+
+function openWebcam() {
+    console.log('OPENWEBCAM', 'openWebcam')
+    Promise.all([
+        // faceapi.nets.ageGenderNet.loadFromUri('models'),
+        faceapi.nets.ssdMobilenetv1.loadFromUri('models'),
+        // faceapi.nets.tinyFaceDetector.loadFromUri('models'),
+        faceapi.nets.faceLandmark68Net.loadFromUri('models'),
+        faceapi.nets.faceRecognitionNet.loadFromUri('models'),
+        // faceapi.nets.faceExpressionNet.loadFromUri('models')
+    ]).then(startSteam);
 }
